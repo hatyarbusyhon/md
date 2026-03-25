@@ -1,0 +1,15 @@
+"version": 2,
+  "builds": [
+    { "src": "*.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/dadan", "dest": "/dadan.js" },
+    { "src": "/md", "dest": "/md.js" },
+    { "src": "/ashraf", "dest": "/ashraf.js" },
+    { "src": "/malik", "dest": "/malik.js" },
+    { "src": "/sultan", "dest": "/sultan.js" },
+    { "src": "/gaffar", "dest": "/gaffar.js" },
+    { "src": "/umar", "dest": "/umar.js" },
+    { "src": "/farhan", "dest": "/farhan.js" }
+  ]"src": "/tahir", "dest": "/tahir.js"
+}
